@@ -1,0 +1,6 @@
+{
+    "modules": [
+        { "name": "hello", "source": "main" }
+    ],
+    "mainModule": "hello"
+}

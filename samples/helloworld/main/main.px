@@ -1,0 +1,7 @@
+function main(args) {
+    print("Hello, World!");
+    for (i = 10; i >= 1; i--) {
+        print(i + " Mississippi!");
+    }
+    print("Ready or not, here I come!");
+}

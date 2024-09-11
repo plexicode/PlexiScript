@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initiali-size=1">
+        <title>%%%EXPORTED_TITLE%%%</title>
+        <script src="CommonScriptRuntime_web_0_1_0.js"></script>
+        <script src="PlexiScriptRuntime_web_0_1_0.js"></script>
+        <script src="%%%EXPORTED_ID%%%.js"></script>
+        <script>
+            window.addEventListener('load', () => {
+                let byteCode = %%%EXPORTED_ID%%%_BYTECODE_B64;
+                let cliArgs = [];
+                newPlexiScriptWebRuntime_0_1_0().createRuntimeContext(byteCode, cliArgs, {});
+            });
+        </script>
+        <style>
+            body { margin: 0, font-family: sans-serif; }
+        </style>
+    </head>
+    <body>
+
+    </body>
+</html>

@@ -9,10 +9,10 @@ namespace PlexiScript
         {
             public bool IsExport { get; set; }
             public bool IsRun { get; set; }
-            public string BuildFilePath { get; set; }
-            public string ExportPlatform{ get; set; }
-            public string ExportDestination { get; set; }
-            public string ExportFormat { get; set; }
+            public string BuildFilePath { get; set; } = "";
+            public string ExportPlatform { get; set; } = "";
+            public string ExportDestination { get; set; } = "";
+            public string? ExportFormat { get; set; }
         }
 
         private static CliCommand? ParseUsage(string[] args)
@@ -40,6 +40,8 @@ namespace PlexiScript
                         kvp[optionFlag] = optionValue;
                     }
                 }
+
+                if (!isValid) return null;
             }
             if (kvp.ContainsKey("export"))
             {
@@ -84,7 +86,7 @@ namespace PlexiScript
                 ]);
             }
 
-            string buildFile = command.BuildFilePath;
+            string buildFile = command.BuildFilePath!;
 
             PlexiScriptCompile.PlexiCompiler compiler = new PlexiScriptCompile.PlexiCompiler();
             PlexiScriptCompile.PlexiCompileResult result = compiler.DoCompilation(buildFile);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 
 namespace PlexiScriptCompile
@@ -16,28 +15,81 @@ namespace PlexiScriptCompile
 
         public BuildFile(string path, string content)
         {
-            BuildFileJson? parsedFile = null;
+            JsonElement root;
             try
             {
-                Utf8JsonReader jsonReader = new System.Text.Json.Utf8JsonReader(Encoding.UTF8.GetBytes(content));
-                parsedFile = System.Text.Json.JsonSerializer.Deserialize<BuildFileJson>(content);
+                JsonDocument buildFileDoc = System.Text.Json.JsonDocument.Parse(content);
+                root = buildFileDoc.RootElement;
             }
-            catch (Exception)
+            catch (Exception msg)
             {
-                // syntax problem
+                this.SetError("Invalid JSON syntax");
+                return;
             }
 
-            if (parsedFile == null)
+            if (root.ValueKind != JsonValueKind.Object)
             {
-                this.IsValid = false;
-                this.Error = "Build file is not valid JSON";
-            }
-            else
-            {
-                string parentDir = System.IO.Path.GetDirectoryName(path);
-                this.Init(parentDir, parsedFile);
+                this.SetError("JSON Root must be an object.");
+                return;
             }
 
+            if (!root.TryGetProperty("modules", out JsonElement modules))
+            {
+                this.SetError("modules field is missing.");
+                return;
+            }
+            if (modules.ValueKind != JsonValueKind.Array)
+            {
+                this.SetError("modules field must be an array.");
+                return;
+            }
+
+            if (!root.TryGetProperty("mainModule", out JsonElement mainMod))
+            {
+                this.SetError("mainModule field is missing.");
+                return;
+            }
+            if (mainMod.ValueKind != JsonValueKind.String)
+            {
+                this.SetError("mainModule field must be a string");
+                return;
+            }
+
+            List<ModuleJson> modulesBuilder = new List<ModuleJson>();
+            foreach (JsonElement modRaw in modules.EnumerateArray())
+            {
+                if (modRaw.ValueKind != JsonValueKind.Object)
+                {
+                    this.SetError("modules array contains a non-object.");
+                    return;
+                }
+                if (!modRaw.TryGetProperty("name", out JsonElement modName) || modName.ValueKind != JsonValueKind.String)
+                {
+                    this.SetError("module name must be a string.");
+                    return;
+                }
+                if (!modRaw.TryGetProperty("source", out JsonElement modSource) || modSource.ValueKind != JsonValueKind.String)
+                {
+                    this.SetError("module source must be a string.");
+                    return;
+                }
+                modulesBuilder.Add(new ModuleJson() { name = modName.GetString(), source = modSource.GetString() });
+            }
+
+            BuildFileJson parsedFile = new BuildFileJson()
+            {
+                mainModule = mainMod.GetString(),
+                modules = modulesBuilder.ToArray(),
+            };
+
+            string parentDir = System.IO.Path.GetDirectoryName(path);
+            this.Init(parentDir, parsedFile);
+        }
+
+        private void SetError(string msg)
+        {
+            this.IsValid = false;
+            this.Error = "Build File: " + msg;
         }
 
         private void Init(string projectPath, BuildFileJson rawData)
@@ -46,7 +98,8 @@ namespace PlexiScriptCompile
             if (err == null)
             {
                 this.IsValid = true;
-            } else
+            }
+            else
             {
                 this.IsValid = false;
                 this.Error = err;
@@ -138,14 +191,14 @@ namespace PlexiScriptCompile
 
         public class ModuleJson
         {
-            public string source { get; set; }
-            public string name { get; set; }
+            public string? source { get; set; }
+            public string? name { get; set; }
         }
 
         public class BuildFileJson
         {
-            public ModuleJson[] modules { get; set; }
-            public string mainModule { get; set; }
+            public ModuleJson[]? modules { get; set; }
+            public string? mainModule { get; set; }
         }
 
     }

@@ -5,8 +5,21 @@ using System.Text;
 
 namespace PlexiScriptCompile
 {
-    internal static class FileUtil
+    public static class FileUtil
     {
+        public static bool EnsureDirectoryExists(string? path, string? root)
+        {
+            if (root == null) root = System.IO.Path.GetPathRoot(path);
+            if (System.IO.Directory.Exists(path)) return true;
+            if (System.IO.File.Exists(path)) return false;
+            if (root == path) return false;
+            string? parent = System.IO.Path.GetDirectoryName(path);
+            EnsureDirectoryExists(parent, root);
+            if (path == null) return false;
+            System.IO.Directory.CreateDirectory(path);
+            return true;
+        }
+
         public static string[] RecursiveGetRelativePaths(string rootDir)
         {
             List<string> output = new List<string>();

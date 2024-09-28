@@ -8,7 +8,7 @@ namespace PlexiScript
         public static void ExportFiles(string directory, Dictionary<string, FileOutput> files)
         {
             directory = System.IO.Path.GetFullPath(directory);
-            EnsureDirectoryExists(directory, null);
+            PlexiScriptCompile.FileUtil.EnsureDirectoryExists(directory, null);
 
             foreach (string filePath in files.Keys)
             {
@@ -16,7 +16,7 @@ namespace PlexiScript
                 string absPath = System.IO.Path.Combine(
                     directory,
                     string.Join(System.IO.Path.DirectorySeparatorChar, filePath.Split('/')));
-                EnsureDirectoryExists(absPath, null);
+                PlexiScriptCompile.FileUtil.EnsureDirectoryExists(System.IO.Path.GetDirectoryName(absPath), null);
                 if (file.ByteContent != null)
                 {
                     System.IO.File.WriteAllBytes(absPath, file.ByteContent);
@@ -34,19 +34,6 @@ namespace PlexiScript
                     throw new NotImplementedException();
                 }
             }
-        }
-
-        private static bool EnsureDirectoryExists(string? path, string? root)
-        {
-            if (root == null) root = System.IO.Path.GetPathRoot(path);
-            if (System.IO.Directory.Exists(path)) return true;
-            if (System.IO.File.Exists(path)) return false;
-            if (root == path) return false;
-            string? parent = System.IO.Path.GetDirectoryName(path);
-            EnsureDirectoryExists(parent, root);
-            if (path == null) return false;
-            System.IO.Directory.CreateDirectory(path);
-            return true;
         }
     }
 }

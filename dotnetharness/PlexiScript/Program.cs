@@ -110,21 +110,11 @@ namespace PlexiScript
                     return ShowErrorAndEnd("Missing export destination. See usage.");
                 }
 
-                if (command.ExportFormat == "b64")
-                {
-                    System.IO.File.WriteAllText(command.ExportDestination, result.ByteCodeBase64);
-                }
-                else if (command.ExportFormat == null || command.ExportFormat == "bytes")
-                {
-                    System.IO.File.WriteAllBytes(command.ExportDestination, result.ByteCode);
-                }
-                else
-                {
-                    return ShowErrorAndEnd("Unknown export format: '" + command.ExportFormat + "'");
-                }
+                string exportDest = System.IO.Path.GetFullPath(command.ExportDestination);
+                PlexiScriptCompile.FileUtil.EnsureDirectoryExists(exportDest, System.IO.Path.GetPathRoot(exportDest));
 
                 Exporter exporter = new Exporter(command.ExportPlatform);
-                exporter.Export(command.ExportDestination);
+                exporter.Export(command.ExportDestination, result);
             }
 
             if (command.IsRun)

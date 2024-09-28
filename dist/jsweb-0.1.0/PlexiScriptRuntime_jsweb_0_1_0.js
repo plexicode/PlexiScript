@@ -1,7 +1,6 @@
 const newPlexiScriptWebRuntime_0_1_0 = (domHost) => {
-  const VERSION = '0.1.0';
-  const CommonScript = window.getCommonScript(VER);
-  let engineBuilder = CommonScript.newEngineContextBuilder('PlexiScript', VERSION);
+  const CommonScript = window.getCommonScript('0.1.0');
+  let engineBuilder = CommonScript.newEngineContextBuilder('PlexiScript', '0.1.0');
   const VALUE_CONVERTER = CommonScript.runtimeValueConverter;
   const HOST = domHost || document.body;
 

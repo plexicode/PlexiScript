@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PlexiScriptCompile
 {
@@ -11,12 +9,13 @@ namespace PlexiScriptCompile
         public PlexiCompiler()
         {
             this.engine = new CommonScript.Compiler.CompilationEngine(
-                "PlexiScript", 
+                "PlexiScript",
                 "0.1.0", // TODO: this needs to be injected
                 ExtensionList.GetExtensionIds());
         }
 
-        public PlexiCompileResult DoCompilation(string buildFilePath) {
+        public PlexiCompileResult DoCompilation(string buildFilePath)
+        {
 
             string buildFileAbsPath = System.IO.Path.GetFullPath(buildFilePath);
             if (!System.IO.File.Exists(buildFileAbsPath))
@@ -29,11 +28,11 @@ namespace PlexiScriptCompile
                 return PlexiCompileResult.GetError(buildFile.Error);
             }
 
-            Dictionary<string, Dictionary<string, string>> files = FileInclusions.GetFiles();
+            Dictionary<string, Dictionary<string, string>> userFiles = new Dictionary<string, Dictionary<string, string>>();
 
             foreach (PlexiModule mod in buildFile.Modules)
             {
-                if (files.ContainsKey(mod.ModuleId))
+                if (userFiles.ContainsKey(mod.ModuleId))
                 {
                     return PlexiCompileResult.GetError("There is a module named '" + mod.ModuleId + "' that conflicts with a built-in module by the same name.");
                 }
@@ -48,10 +47,14 @@ namespace PlexiScriptCompile
                     filesForModule[mod.ModuleId + ":" + relPath] = System.IO.File.ReadAllText(absPath);
                 }
 
-                files[mod.ModuleId] = filesForModule;
+                userFiles[mod.ModuleId] = filesForModule;
             }
 
-            CommonScript.Compiler.CompilationResult result = engine.DoStaticCompilation(buildFile.MainModule.ModuleId, files);
+            CommonScript.Compiler.CompilationResult result = engine.DoStaticCompilation(
+                buildFile.MainModule.ModuleId,
+                userFiles,
+                FileInclusions.GetFiles());
+
             return new PlexiCompileResult()
             {
                 ByteCode = result.ByteCodePayload,

@@ -1,0 +1,1083 @@
+@public
+class Element {
+  field _U3;
+  constructor() {
+    this._U3 = genElementInternals(this, getU3Ctx());
+  }
+
+  function getFrame() { return this._U3.frame; }
+  function setId(id) { element_setUserId(this._U3, id + ''); return this; }
+  function setWidthPercent(n) { return this.setWidth(n + '%'); }
+  function setHeightPercent(n) { return this.setHeight(n + '%'); }
+  function setWidthRatio(r) { return this.setWidth((r * 100) + '%'); }
+  function setHeightRatio(r) { return this.setHeight((r * 100) + '%'); }
+  function setMargin(m) {
+    for (i = 1; i < 5; i++) setProp_int(this._U3, 'M' + i, m);
+    return this;
+  }
+
+  function setBackgroundColor(value) { return setProp_color(this._U3, 'BG', value);  }
+  function getBackgroundColor() { return getProp_color(this._U3, 'BG', null); }
+  function clearBackgroundColor() { return clearProp(this._U3, 'BG'); }
+  function setBold(value) { return setProp_bool(this._U3, 'BO', value);  }
+  function getBold() { return getProp_bool(this._U3, 'BO', null); }
+  function clearBold() { return clearProp(this._U3, 'BO'); }
+  function setDockDirection(value) { return setProp_enum(this._U3, 'DD', value, Internals.EN3);  }
+  function getDockDirection() { return getProp_enum(this._U3, 'DD', null); }
+  function clearDockDirection() { return clearProp(this._U3, 'DD'); }
+  function setFontSize(value) { return setProp_float(this._U3, 'FS', value);  }
+  function getFontSize() { return getProp_float(this._U3, 'FS', null); }
+  function clearFontSize() { return clearProp(this._U3, 'FS'); }
+  function setHeight(value) { return setProp_size(this._U3, 'H', value);  }
+  function getHeight() { return getProp_size(this._U3, 'H', null); }
+  function clearHeight() { return clearProp(this._U3, 'H'); }
+  function setHorizontalAlignment(value) { return setProp_enum(this._U3, 'HA', value, Internals.EN1);  }
+  function getHorizontalAlignment() { return getProp_enum(this._U3, 'HA', null); }
+  function clearHorizontalAlignment() { return clearProp(this._U3, 'HA'); }
+  function setItalic(value) { return setProp_bool(this._U3, 'IT', value);  }
+  function getItalic() { return getProp_bool(this._U3, 'IT', null); }
+  function clearItalic() { return clearProp(this._U3, 'IT'); }
+  function setMarginLeft(value) { return setProp_int(this._U3, 'M1', value);  }
+  function getMarginLeft() { return getProp_int(this._U3, 'M1', null); }
+  function clearMarginLeft() { return clearProp(this._U3, 'M1'); }
+  function setMarginTop(value) { return setProp_int(this._U3, 'M2', value);  }
+  function getMarginTop() { return getProp_int(this._U3, 'M2', null); }
+  function clearMarginTop() { return clearProp(this._U3, 'M2'); }
+  function setMarginRight(value) { return setProp_int(this._U3, 'M3', value);  }
+  function getMarginRight() { return getProp_int(this._U3, 'M3', null); }
+  function clearMarginRight() { return clearProp(this._U3, 'M3'); }
+  function setMarginBottom(value) { return setProp_int(this._U3, 'M4', value);  }
+  function getMarginBottom() { return getProp_int(this._U3, 'M4', null); }
+  function clearMarginBottom() { return clearProp(this._U3, 'M4'); }
+  function setOpacity(value) { return setProp_float(this._U3, 'OP', value);  }
+  function getOpacity() { return getProp_float(this._U3, 'OP', null); }
+  function clearOpacity() { return clearProp(this._U3, 'OP'); }
+  function setStrikethrough(value) { return setProp_bool(this._U3, 'ST', value);  }
+  function getStrikethrough() { return getProp_bool(this._U3, 'ST', null); }
+  function clearStrikethrough() { return clearProp(this._U3, 'ST'); }
+  function setTextColor(value) { return setProp_color(this._U3, 'TC', value);  }
+  function getTextColor() { return getProp_color(this._U3, 'TC', null); }
+  function clearTextColor() { return clearProp(this._U3, 'TC'); }
+  function setUnderline(value) { return setProp_bool(this._U3, 'UN', value);  }
+  function getUnderline() { return getProp_bool(this._U3, 'UN', null); }
+  function clearUnderline() { return clearProp(this._U3, 'UN'); }
+  function setVerticalAlignment(value) { return setProp_enum(this._U3, 'VA', value, Internals.EN2);  }
+  function getVerticalAlignment() { return getProp_enum(this._U3, 'VA', null); }
+  function clearVerticalAlignment() { return clearProp(this._U3, 'VA'); }
+  function setWidth(value) { return setProp_size(this._U3, 'W', value);  }
+  function getWidth() { return getProp_size(this._U3, 'W', null); }
+  function clearWidth() { return clearProp(this._U3, 'W'); }
+}
+
+@public
+class Panel : Element {
+  constructor() : base() {
+    element_setType(this._U3, 'P');
+    genPanelInternals(this._U3);
+  }
+
+  function getChildren() {
+    children = [];
+    wrapped = panel_getChildrenArray(this._U3);
+    for (i = 0; i < wrapped.length; i++) {
+        children.add(element_getUserElement(wrapped[i]));
+    }
+    return children;
+  }
+  function firstChild() {
+    return element_getUserElement(panel_getChild(this._U3, true));
+  }
+  function lastChild() {
+    return element_getUserElement(panel_getChild(this._U3, false));
+  }
+  function clearChildren() {
+    panel_clearChildren(this._U3);
+    return this;
+  }
+  function append(child) {
+    panel_append(this._U3, child._U3 ?? throwInvalidElement('Cannot append'));
+    return this;
+  }
+  function prepend(child) {
+    panel_prepend(this._U3, child._U3 ?? throwInvalidElement('Cannot prepend'));
+    return this;
+  }
+  function insert(child, index) {
+    panel_insert(this._U3, child._U3, index);
+    return this;
+  }
+  function indexOf(e) {
+    return panel_indexOf(this._U3, e._U3);
+  }
+  function removeLast() {
+    panel_removeLast(this._U3);
+    return this;
+  }
+  function removeFirst() {
+    panel_removeFirst(this._U3);
+    return this;
+  }
+  function _U3_setContent(c) {
+    panel_setContent(this._U3, c._U3);
+    return this;
+  }
+
+}
+
+@public
+class Border : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'BR');
+    panel_markSingleContent(this._U3);
+  }
+  function setContent(child) { return this._U3_setContent(child); }
+}
+
+@public
+class Button : Element {
+  constructor() : base() {
+    element_setType(this._U3, 'BU');
+  }
+  function onClick(fn) { return addEvCb(this._U3, 'CL', fn); }
+  function setTextContent(value) { return setProp_string(this._U3, 'TX', value);  }
+  function getTextContent() { return getProp_string(this._U3, 'TX', null); }
+  function clearTextContent() { return clearProp(this._U3, 'TX'); }
+}
+
+@public
+class DockPanel : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'DP');
+  }
+}
+
+@public
+class ShelfPanel : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'HP');
+  }
+}
+
+@public
+class Image : Element {
+  constructor() : base() {
+    element_setType(this._U3, 'IM');
+  }
+  function setSource(value) { return setProp_image(this._U3, 'SR', value);  }
+  function getSource() { return getProp_image(this._U3, 'SR', null); }
+  function clearSource() { return clearProp(this._U3, 'SR'); }
+}
+
+@public
+class SplitPanel : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'IP');
+  }
+}
+
+@public
+class LockPanel : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'LP');
+  }
+}
+
+@public
+class ScrollPanel : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'RP');
+    panel_markSingleContent(this._U3);
+  }
+  function setContent(child) { return this._U3_setContent(child); }
+  function setScrollX(value) { return setProp_enum(this._U3, 'SX', value, Internals.EN5);  }
+  function getScrollX() { return getProp_enum(this._U3, 'SX', null); }
+  function clearScrollX() { return clearProp(this._U3, 'SX'); }
+  function setScrollY(value) { return setProp_enum(this._U3, 'SY', value, Internals.EN4);  }
+  function getScrollY() { return getProp_enum(this._U3, 'SY', null); }
+  function clearScrollY() { return clearProp(this._U3, 'SY'); }
+}
+
+@public
+class StackPanel : Panel {
+  constructor() : base() {
+    element_setType(this._U3, 'SP');
+  }
+}
+
+@public
+class TextBlock : Element {
+  constructor() : base() {
+    element_setType(this._U3, 'TB');
+  }
+  function setTextContent(value) { return setProp_string(this._U3, 'TX', value);  }
+  function getTextContent() { return getProp_string(this._U3, 'TX', null); }
+  function clearTextContent() { return clearProp(this._U3, 'TX'); }
+}
+
+@public
+class TextLabel : Element {
+  constructor() : base() {
+    element_setType(this._U3, 'TL');
+  }
+  function setTextContent(value) { return setProp_string(this._U3, 'TX', value);  }
+  function getTextContent() { return getProp_string(this._U3, 'TX', null); }
+  function clearTextContent() { return clearProp(this._U3, 'TX'); }
+}
+
+
+function getU3Ctx() {
+    if (U3Context.instance == null) throw new U3Exception("Cannot instantiate U3 classes without calling U3Init()");
+    return U3Context.instance._u3ctx;
+}
+
+@public
+function U3Init() {
+    _ = new U3Context();
+}
+
+class U3Context {
+    @static field instance = null;
+    field _u3ctx;
+    constructor() {
+        if (U3Context.instance != null) throw new U3Exception("Cannot initialize multiple U3 instances");
+        U3Context.instance = this;
+        this._u3ctx = newU3Context();
+
+        PST_RegisterExtensibleCallback('is_valid_element', args => args[0] is Element);
+        PST_RegisterExtensibleCallback('throwErr', args => { throw new U3Exception(args[0]); });
+        PST_RegisterExtensibleCallback('image_unwrapper', args => {
+            val = args[0];
+            if (val != null && val.fmt == 'IMAGE') return val.storage;
+            return val;
+        });
+        PST_RegisterExtensibleCallback('frame_doLazyFlush', args => { frame_doLazyFlush(args[0]); });
+
+        // client_specific_initializer();
+    }
+}
+
+class U3Exception : Exception {
+    constructor(msg) : base(msg) { }
+}
+
+
+class Internals {
+  @static field EN1 = enumToLookup(['Center', 'Left', 'Right', 'Stretch']);
+  @static field EN2 = enumToLookup(['Bottom', 'Center', 'Stretch', 'Top']);
+  @static field EN3 = enumToLookup(['East', 'North', 'South', 'West']);
+  @static field EN4 = enumToLookup(['Auto', 'Hide', 'Scroll']);
+  @static field EN5 = enumToLookup(['Auto', 'Hide', 'Scroll']);
+}
+
+
+function frame_doLazyFlush(frame) {
+  if (!frame_prepareForFlush(frame)) return;
+
+  // Push the flush to the end of the event loop, to allow multiple edits to accumulate into one message.
+  delayInvoke(new DummyFlushInvokeWrapper(frame).doThing, 0);
+}
+
+// closures aren't working in CommonScript, lol
+class DummyFlushInvokeWrapper {
+    field frame;
+    constructor(frame) {
+        this.frame = frame;
+    }
+    function doThing() {
+        frame_performFlushIfStillNeeded(this.frame);
+    }
+}
+
+@public
+class Frame {
+  constructor() {
+    this._U3 = genFrameInternals(this, getU3Ctx());
+  }
+  function setRoot(element) {
+    frame_setRoot(this._U3, element._U3);
+    return this;
+  }
+  function show() {
+    client_specific_frame_initializer(this._U3);
+    frame_show(this._U3);
+    return this;
+  }
+  function hide() {
+    throw new NotImplementedException();
+  }
+  function getElementById(id) {
+    return element_getUserElement(frame_crawlForUserId(this._U3, id));
+  }
+}
+
+
+// Closures are needed badly!
+class DummyEventHandlerWrapper {
+    field element;
+    field handler;
+
+    constructor(element, handler) {
+        this.element = element;
+        this.handler = handler;
+    }
+
+    function doThing(evData) {
+        delayInvoke(new DummyWrapper2(evData, this.element, this.handler).doThing, 0);
+    }
+}
+
+class DummyWrapper2 {
+    field evData;
+    field element;
+    field handler;
+
+    constructor(evData, element, handler) {
+        this.evData = evData;
+        this.element = element;
+        this.handler = handler;
+    }
+
+    function doThing() {
+        this.handler(this.evData, this.element.element);
+    }
+}
+
+function addEvCb(u, type, fn) {
+    addEventHandlerToElement(getU3Ctx(), u, type, new DummyEventHandlerWrapper(u, fn).doThing);
+
+    return element_getUserElement(u);
+}
+
+function ensureInt(v) {
+    if (typeof v == 'int') return v;
+    if (typeof v == 'float') return floor(v);
+    if (v == null) return null;
+    throwErr("Not a valid integer.");
+}
+
+function ensureFloat(v) {
+    t = typeof v;
+    if (t == 'float') return v;
+    if (t == 'int') return v + 0.0;
+    if (v == null) return null;
+    throwErr("Not a valid number.");
+}
+
+function ensureEnum(v, d, vals) {
+    if (v == null) return null;
+    return vals.get(v.toUpperCase()) ?? throwErr("Invalid value for enum: " + v);
+}
+
+function ensureUserColor(v) {
+    if (v == null) return null;
+    v = v + '';
+    switch (v) {
+        case 'T': return [0, 0, 0, 0];
+        case 'BL': return [0, 0, 0, 255];
+        case 'WH': return [255, 255, 255, 255];
+    }
+    t = v.split(',');
+    return [
+        tryParseInt(t[0]),
+        tryParseInt(t[1]),
+        tryParseInt(t[2]),
+        t.length == 4 ? tryParseInt(t[3]) : 255
+    ];
+}
+
+function ensureUserSize(v) {
+    if (v == null) return null;
+    t = v.split(':');
+    if (t == 'Z') return 0;
+    if (t == 'F') return '100%';
+    if (t == 'A') return tryParseFloat(t[1]);
+    if (t == 'P') return t + '%';
+    throw new FatalException();
+}
+
+function ensureUserImage(v) {
+    throw new NotImplementedException();
+}
+
+function ensureWireColor(v) {
+    t = typeof v;
+    if (t == 'string') {
+        throw new NotImplementedException(); // TODO: hex colors
+    }
+
+    if (t == 'list') {
+        v = v.clone();
+        if (v.length == 3) v.add(255);
+        if (v.length != 4) return null;
+        o = '';
+        a = ensureInt(v[3]);
+        if (a == null || a < 0 || a > 255) return null;
+        sum = 0;
+        for (i = 0; i < 3; i++) {
+            if (i > 0) o += ',';
+            n = ensureInt(v[i]);
+            if (n == null || n < 0 || n > 255) return null;
+            sum += n;
+            o += n;
+        }
+        if (a == 0) return 'T';
+        if (a == 255)  {
+            if (sum == 0) return 'BL';
+            if (sum == 255 * 3) return 'WH';
+        } else {
+            o += ',' + a;
+        }
+
+        return o;
+    }
+    return null;
+}
+
+function ensureWireSize(v) {
+    switch (typeof v) {
+        case 'int':
+        case 'float':
+            return 'A:' + v;
+        case 'string':
+            if (v.endsWith('%')) {
+                f = tryParseFloat(v[:-1]);
+                if (f < 0) return null;
+                if (f == 0) return 'Z';
+                if (f >= 100) return 'F';
+                return 'P:' + f;
+            }
+            return null;
+        default:
+            return null;
+    }
+}
+
+function ensureWireImage(v) {
+    throw new NotImplementedException();
+}
+
+function getProp_string(o, k) { return getProp(o, k, ''); }
+function getProp_int(o, k, d) { return ensureInt(getProp(o, k), d); }
+function getProp_bool(o, k, d) { return !!getProp(o, k, d); }
+function getProp_float(o, k, d) { return ensureFloat(getProp(o, k), d); }
+function getProp_color(o, k) { return ensureUserColor(getProp(o, k)); }
+function getProp_enum(o, k) { return getProp_string(o, k); }
+function getProp_size(o, k) { return ensureUserSize(getProp(o, k, null)); }
+function getProp_image(o, k) { return ensureUserImage(getProp(o, k, null)); }
+
+function setProp_string(o, k, v) { return setProp(o, k, v == null ? null : (v + '')); }
+function setProp_int(o, k, v) { return setProp(o, k, ensureInt(v)); }
+function setProp_bool(o, k, v) { return setProp(o, k, !!v); }
+function setProp_float(o, k, v) { return setProp(o, k, ensureFloat(v)); }
+function setProp_color(o, k, v) { return setProp(o, k, ensureWireColor(v)); }
+function setProp_enum(o, k, v, en) { return setProp(o, k, ensureEnum(v, null, en)); }
+function setProp_size(o, k, v) { return setProp(o, k, ensureWireSize(v)); }
+function setProp_image(o, k, v) { return setProp(o, k, ensureWireImage(v)); }
+
+
+class PST_ExtCallbacks {
+  @static field ext = {};
+}
+
+function PST_RegisterExtensibleCallback(name, fn) {
+  PST_ExtCallbacks.ext[name] = fn;
+}
+
+function addEventHandlerToElement(ctx, owner, type, callback) {
+  handler = [getNextId("ev", ctx), type, callback, owner];
+  owner[8].add(handler);
+  if (owner[4] != null) {
+    registerFrameEvent(owner[4], handler);
+  }
+}
+
+function applyWireData(frameInternals, items) {
+  i = 0;
+  id = null;
+  sectionSize = 0;
+  sectionType = null;
+  value = null;
+  while (i < items.length) {
+    sectionType = items[i];
+    sectionSize = items[i + 1];
+    i += 2;
+    if (sectionType == "ECB") {
+      id = items[i];
+      i += 1;
+      value = frameInternals[7][id];
+      evArg = {};
+      value[2](evArg);
+    } else {
+      throwErr("Not implemented");
+    }
+  }
+}
+
+function attachToFrame(e, frame) {
+  existingFrame = e[4];
+  if (existingFrame != null) {
+    if (existingFrame == frame) {
+      throwErr("Element is already in the frame.");
+    }
+    throwErr("Element is already in a different frame.");
+  }
+  if (frame == null) {
+    return;
+  }
+  proliferation = [];
+  proliferation.add(e);
+  ids = {};
+  while (proliferation.length > 0) {
+    current = proliferation.pop();
+    id = current[1];
+    if (ids.contains(id)) {
+      throwErr("Element is in this frame multiple times.");
+    }
+    ids[id] = true;
+    if (current[4] != null) {
+      throwErr("Element is already in a frame.");
+    }
+    if (current[9]) {
+      frame[5][id] = current;
+      current[10][5] = true;
+      children = current[10][0];
+      i = 0;
+      while (i < children.length) {
+        proliferation.add(children[i]);
+        i += 1;
+      }
+    }
+    current[4] = frame;
+    eventHandlers = current[8];
+    j = 0;
+    while (j < eventHandlers.length) {
+      registerFrameEvent(frame, eventHandlers[j]);
+      j += 1;
+    }
+    frame[4][id] = current;
+  }
+}
+
+function check_can_add_element(e, errMsg) {
+  args = e[0][1];
+  args[0] = e[7];
+  if (!PST_ExtCallbacks.ext["is_valid_element"].invoke(args)) {
+    throwErr(errMsg + ": value is not an Element instance");
+  }
+  if (e[4] != null) {
+    throwErr(errMsg + ": value is already in the UI tree.");
+  }
+}
+
+function clearProp(e, k) {
+  return setProp(e, k, null);
+}
+
+function element_getUserElement(e) {
+  if (e == null) {
+    return null;
+  }
+  return e[7];
+}
+
+function element_setType(e, t) {
+  e[2] = t;
+}
+
+function element_setUserId(e, v) {
+  e[3] = v;
+}
+
+function enumToLookup(items) {
+  o = {};
+  i = 0;
+  while (i < items.length) {
+    item = items[i];
+    o[item.upper()] = item;
+    i += 1;
+  }
+  return o;
+}
+
+function flattenNewProperties(e) {
+  dirty = false;
+  keys = e[5].keys();
+  i = 0;
+  while (i < (keys.length)) {
+    key = keys[i];
+    dirty = true;
+    value = e[5][key];
+    e[6][key] = value;
+    if (value == null) {
+      e[6].remove(key);
+    }
+    i += 1;
+  }
+  if (dirty) {
+    e[5] = {};
+  }
+}
+
+function frame_crawlForUserId(frame, id) {
+  root = frame[11];
+  q = [];
+  if (root != null) {
+    q.add(root);
+  }
+  while (q.length > 0) {
+    e = q.pop();
+    if (e[3] == id) {
+      return e;
+    }
+    if (e[9]) {
+      children = e[10][0];
+      i = children.length - 1;
+      while (i >= 0) {
+        q.add(children[i]);
+        i -= 1;
+      }
+    }
+  }
+  return null;
+}
+
+function frame_doFlush(frame) {
+  if (frame != null) {
+    args = frame[0][1];
+    args[0] = frame;
+    PST_ExtCallbacks.ext["frame_doLazyFlush"].invoke(args);
+  }
+}
+
+function frame_getIpcHandle(frame) {
+  return frame[9];
+}
+
+function frame_performFlushIfStillNeeded(frame) {
+  frame[12] = false;
+  if (frame[13]) {
+    frame[13] = false;
+    data = generateWireData(frame);
+    frame[14](data, data.length);
+  }
+}
+
+function frame_prepareForFlush(frame) {
+  frame[13] = true;
+  if (!frame[8] || frame[12]) {
+    return false;
+  }
+  frame[12] = true;
+  return true;
+}
+
+function frame_setIpcHandle(frame, ipcHandle) {
+  frame[9] = ipcHandle;
+}
+
+function frame_setRoot(frame, element) {
+  check_can_add_element(element, "Cannot set element as root");
+  frame[11] = element;
+  attachToFrame(element, frame);
+}
+
+function frame_setSendDownstream(frame, cb) {
+  frame[14] = cb;
+}
+
+function frame_show(frame) {
+  if (!frame[8]) {
+    frame[8] = true;
+    frame_doFlush(frame);
+  }
+}
+
+function genElementInternals(element, ctx) {
+  return [ctx, getNextId("e", ctx), null, null, null, {}, {}, element, [], false, null];
+}
+
+function generateWireData(frame) {
+  arg1 = [null];
+  wireData = [];
+  dirtyKeys = frame[4].keys();
+  propKeys = null;
+  props = null;
+  i = 0;
+  j = 0;
+  sizeIndex = 0;
+  key = null;
+  id = null;
+  val = null;
+  e = null;
+  panel = null;
+  panelData = null;
+  children = null;
+  keyCount = 0;
+  i = 0;
+  while (i < (dirtyKeys.length)) {
+    id = dirtyKeys[i];
+    e = frame[4][id];
+    if (e != null) {
+      frame[3][id] = null;
+      flattenNewProperties(e);
+      props = e[6];
+      keyCount = 0;
+      sizeIndex = wireData.length + 1;
+      wireData.add("FEI");
+      wireData.add(0);
+      wireData.add(id);
+      wireData.add(e[2]);
+      propKeys = props.keys();
+      j = 0;
+      while (j < (propKeys.length)) {
+        key = propKeys[j];
+        val = valueConvertForCanonicalWireValue(arg1, props[key]);
+        wireData.add(key);
+        wireData.add(val);
+        keyCount += 1;
+        j += 1;
+      }
+      wireData[sizeIndex] = 2 + keyCount * 2;
+    }
+    i += 1;
+  }
+  dirtyKeys = frame[3].keys();
+  i = 0;
+  while (i < (dirtyKeys.length)) {
+    id = dirtyKeys[i];
+    e = frame[3][id];
+    if (e != null) {
+      sizeIndex = wireData.length + 1;
+      wireData.add("PPU");
+      wireData.add(0);
+      wireData.add(id);
+      keyCount = 0;
+      props = e[5];
+      propKeys = props.keys();
+      j = 0;
+      while (j < (propKeys.length)) {
+        key = propKeys[j];
+        keyCount += 1;
+        val = valueConvertForCanonicalWireValue(arg1, props[key]);
+        if (val == null) {
+          wireData.add("");
+          wireData.add(key);
+        } else {
+          wireData.add(key);
+          wireData.add(val);
+        }
+        j += 1;
+      }
+      flattenNewProperties(e);
+      wireData[sizeIndex] = 1 + keyCount * 2;
+    }
+    i += 1;
+  }
+  frame[3] = {};
+  frame[4] = {};
+  dirtyKeys = frame[5].keys();
+  i = 0;
+  while (i < (dirtyKeys.length)) {
+    id = dirtyKeys[i];
+    panel = frame[5][id];
+    panelData = panel[10];
+    if (panelData[5]) {
+      if (panelData[0].length > 0) {
+        wireData.add("CHI");
+        wireData.add(1 + panelData[0].length);
+        wireData.add(id);
+        children = panelData[0];
+        j = 0;
+        while (j < children.length) {
+          e = children[j];
+          wireData.add(e[1]);
+          j += 1;
+        }
+      }
+    } else {
+      sizeIndex = wireData.length + 1;
+      size = 0;
+      wireData.add("ITU");
+      wireData.add(size);
+      throwErr("Not implemented");
+    }
+    panelData[5] = false;
+    panelData[1] = [];
+    panelData[2] = [];
+    panelData[3] = 0;
+    panelData[4] = 0;
+    i += 1;
+  }
+  frame[5] = {};
+  while (frame[6].length > 0) {
+    ev = frame[6].pop();
+    wireData.add("EWR");
+    wireData.add(3);
+    wireData.add(ev[0]);
+    wireData.add(ev[3][1]);
+    wireData.add(ev[1]);
+  }
+  rootId = null;
+  if (frame[11] != null) {
+    rootId = frame[11][1];
+  }
+  if (frame[10] != rootId) {
+    wireData.add("RC");
+    wireData.add(1);
+    wireData.add(rootId);
+    frame[10] = rootId;
+  }
+  return wireData;
+}
+
+function genFrameInternals(frame, ctx) {
+  return [ctx, frame, getNextId("f", ctx), {}, {}, {}, [], {}, false, null, null, null, false, false, null];
+}
+
+function genPanelInternals(e) {
+  e[9] = true;
+  e[10] = [[], [], [], 0, 0, true, false];
+}
+
+function getNextId(prefix, ctx) {
+  ctx[0] += 1;
+  return prefix + (ctx[0] + '');
+}
+
+function getProp(e, k, d) {
+  output = null;
+  if (e[5].contains(k)) {
+    output = e[5][k];
+    if (output != null) {
+      return output;
+    }
+  }
+  if (e[6].contains(k)) {
+    output = e[6][k];
+    if (output != null) {
+      return output;
+    }
+  }
+  return d;
+}
+
+function newU3Context() {
+  return [0, [null]];
+}
+
+function panel_append(panel, children) {
+  frame = panel[4];
+  pd = panel[10];
+  i = 0;
+  while (i < children.length) {
+    child = children[i];
+    if (pd[6]) {
+      panel_doMultiChildCheck(panel);
+    }
+    check_can_add_element(child, "Cannot append element");
+    attachToFrame(child, frame);
+    pd[0].add(child);
+    if (!pd[5]) {
+      pd[1].add(child);
+    }
+    i += 1;
+  }
+  registerChildInvalidation(panel);
+}
+
+function panel_clearChildren(p) {
+  pd = p[10];
+  sz = pd[0].length;
+  if (sz > 0) {
+    pd[0] = [];
+    pd[1] = [];
+    pd[2] = [];
+    pd[3] = 0;
+    pd[4] = 0;
+    pd[5] = true;
+  }
+}
+
+function panel_doMultiChildCheck(p) {
+  if (p[10][6] && p[10][0].length > 0) {
+    throwErr("This panel type cannot support multiple children.");
+  }
+}
+
+function panel_getChild(e, isFirst) {
+  children = e[10][0];
+  sz = children.length;
+  if (sz == 0) {
+    return null;
+  }
+  if (isFirst) {
+    return children[0];
+  }
+  return children[sz - 1];
+}
+
+function panel_getChildrenArray(e) {
+  return e[10][0];
+}
+
+function panel_indexOf(panel, child) {
+  if (child != null) {
+    targetId = child[1];
+    children = panel[10][0];
+    i = 0;
+    while (i < children.length) {
+      if (children[i][1] == targetId) {
+        return i;
+      }
+      i += 1;
+    }
+  }
+  return -1;
+}
+
+function panel_insert(panel, child, index) {
+  panelData = panel[10];
+  if (index == panelData[0].length) {
+    return panel_append(panel, quickWrap(child));
+  }
+  if (index == 0) {
+    return panel_prepend(panel, child);
+  }
+  check_can_add_element(child, "Cannot insert element");
+  attachToFrame(child, panel[4]);
+  if (panelData[6]) {
+    panel_doMultiChildCheck(panel);
+  }
+  panelData[0].insert(child, index);
+  panelData[5] = true;
+  registerChildInvalidation(panel);
+}
+
+function panel_markSingleContent(e) {
+  e[10][6] = true;
+}
+
+function panel_prepend(panel, child) {
+  panelData = panel[10];
+  if (panelData[0].length == 0) {
+    return panel_append(panel, quickWrap(child));
+  }
+  check_can_add_element(child, "Cannot prepend element");
+  attachToFrame(child, panel[4]);
+  if (panelData[6]) {
+    panel_doMultiChildCheck(panel);
+  }
+  panelData[0].insert(child, 0);
+  if (!panelData[5]) {
+    panelData[2].add(child);
+  }
+  registerChildInvalidation(panel);
+}
+
+function panel_removeFirst(panel) {
+  panelData = panel[10];
+  if (panelData[0].length == 0) {
+    panel_removeLast(panel);
+    return;
+  }
+  if (panelData[2].length > 0) {
+    panelData[2].pop();
+  } else {
+    panelData[4] += 1;
+  }
+  registerChildInvalidation(panel);
+}
+
+function panel_removeLast(panel) {
+  panelData = panel[10];
+  if (panelData[0].length == 0) {
+    throwErr("Cannot remove: panel has no children.");
+  }
+  if (panelData[1].length > 0) {
+    panelData[1].pop();
+  } else {
+    panelData[3] += 1;
+  }
+  registerChildInvalidation(panel);
+}
+
+function panel_setContent(p, child) {
+  if (p[10][0].length > 0) {
+    panel_removeLast(p);
+  }
+  if (child == null) {
+    throwInvalidElement("Cannot set content");
+  }
+  childrenArr = [];
+  childrenArr.add(child);
+  panel_append(p, childrenArr);
+}
+
+function quickWrap(e) {
+  a = [];
+  a.add(e);
+  return a;
+}
+
+function registerChildInvalidation(panel) {
+  frame = panel[4];
+  if (frame != null) {
+    frame[5][panel[1]] = panel;
+  }
+}
+
+function registerFrameEvent(frame, evHandler) {
+  frame[7][evHandler[0]] = evHandler;
+  frame[6].add(evHandler);
+  frame_doFlush(frame);
+}
+
+function setProp(e, k, v) {
+  e[5][k] = v;
+  if (e[4] != null) {
+    e[4][3][e[1]] = e;
+    if (!e[4][12]) {
+      frame_doFlush(e[4]);
+    }
+  }
+  return e[7];
+}
+
+function throwErr(msg) {
+  args = [null];
+  args[0] = msg;
+  PST_ExtCallbacks.ext["throwErr"].invoke(args);
+}
+
+function throwInvalidElement(msg) {
+  throwErr(msg + ": The value is not a valid UI element.");
+}
+
+function valueConvertForCanonicalWireValue(arg1, val) {
+  if (val == null) {
+    return null;
+  }
+  arg1[0] = val;
+  return PST_ExtCallbacks.ext["image_unwrapper"].invoke(arg1);
+}
+
+
+// Everything in this file is specific to PlexiScript. All other files are
+// general purpose to CommonScript.
+
+function client_specific_frame_initializer(frame) {
+    frameLink = new FrameLink(frame);
+    frame_setSendDownstream(frame, frameLink.sendToRenderer);
+}
+
+class FrameLink {
+    field frame;
+    constructor(frame) {
+        this.frame = frame;
+        frame_setIpcHandle(frame, $u3_frame_new());
+    }
+
+    function sendToRenderer(arr, len) {
+        $u3_client_to_renderer(frame_getIpcHandle(this.frame), arr, len);
+    }
+}

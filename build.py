@@ -64,7 +64,7 @@ def gather_builtin_libs_as_lookup():
     lib_dir = os.path.join(libs_dir, lib_name)
     files = {}
     for file in os.listdir(lib_dir):
-      if file.endswith('.plx'):
+      if file.endswith('.px'):
         file_path = os.path.join(lib_dir, file)
         files[file] = file_read_text(file_path)
     lookup[lib_name] = files

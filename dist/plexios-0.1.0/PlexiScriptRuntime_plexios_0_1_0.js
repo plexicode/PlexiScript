@@ -13,6 +13,18 @@ EXT.io_stdout = (task, args) => {
   procInfo.stdout.writeln(VALUE_CONVERTER.toReadableString(args[0]));
 };
 
+EXT.u3_client_to_renderer = (task, args) => {
+  throw new Error('TODO');
+};
+
+EXT.u3_frame_new = (task, args) => {
+  throw new Error('TODO');
+};
+
+EXT.u3_init = (task, args) => {
+  throw new Error('TODO');
+};
+
 
     Object.keys(EXT).forEach(k => {
       engineBuilder.registerExtension(k, EXT[k]);

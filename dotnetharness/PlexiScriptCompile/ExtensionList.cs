@@ -11,6 +11,11 @@
                 "u3_frame_new",
                 "u3_client_to_renderer",
                 "u3_init",
+                "game_close_window",
+                "game_flip",
+                "game_pop_event_from_queue",
+                "game_set_title",
+                "game_show_window",
 
                 // %%%EXTENSION_LIST_END%%%
             ];

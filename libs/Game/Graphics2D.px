@@ -1,0 +1,39 @@
+function expandArr(arr, sz) {
+    while (sz --> 0) {
+        arr.add(0);
+    }
+}
+
+class Graphics2D {
+    field _gfxBuffer;
+    field _gfxBufferSize;
+    field _win;
+
+    constructor(window) {
+        this._win = window;
+        this._gfxBuffer = [];
+        this._gfxBufferSize = 0;
+    }
+
+    function drawRectangle(x, y, w, h, r, g, b, a = 255) {
+        buf = this._gfxBuffer;
+        sz = this._gfxBufferSize;
+        if (sz + 16 >= buf.length) expandArr(this._gfxBuffer, 16);
+        buf[sz] = 1;
+        buf[sz + 1] = x;
+        buf[sz + 2] = y;
+        buf[sz + 3] = w;
+        buf[sz + 4] = h;
+        buf[sz + 5] = r;
+        buf[sz + 6] = g;
+        buf[sz + 7] = b;
+        buf[sz + 8] = a;
+        this._gfxBufferSize += 16;
+        return this;
+    }
+
+    function fill(r, g, b) {
+        this._gfxBufferSize = 0;
+        return this.drawRectangle(0, 0, this._win._data[1], this._win._data[2], r, g, b);
+    }
+}

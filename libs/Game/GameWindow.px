@@ -1,0 +1,77 @@
+class GameWindow {
+    field _data;
+    field _handle;
+    field _gfx;
+    field _lastFlip;
+    field _mutableBuf;
+    field _pressedKeys;
+
+    constructor(title, width, height, fps) {
+        this._data = [title, width, height, fps];
+        this._handle = null;
+        this._gfx = null;
+        this._lastFlip = 0;
+        this._mutableBuf = [];
+        while (this._mutableBuf.length < 16) this._mutableBuf.add(0);
+        this._pressedKeys = {};
+    }    
+
+    function show() {
+        t = [];
+        $game_show_window(this._data[0], this._data[1], this._data[2], t);
+        this._handle = t[0];
+    }
+
+    function close() {
+        $game_close_window(this._handle);
+    }
+
+    function getGraphics() {
+        if (this._gfx == null) this._gfx = new Graphics2D(this);
+        return this._gfx;
+    }
+
+    function getEvents() {
+        eventsBuffer = [];
+        m = this._mutableBuf;
+        while ($game_pop_event_from_queue(this._handle, m)) {
+            ev = null;
+            switch (m[0]) {
+                case 'KEY':
+                    isDown = m[1] == 1;
+                    key = m[2];
+                    this._pressedKeys[key] = isDown;
+                    ev = new KeyEvent(isDown, key);
+                    break;
+                default:
+                    ev = null;
+                    break;
+            }
+            if (ev != null) eventsBuffer.add(ev);
+        }
+        return eventsBuffer;
+    }
+
+    function isKeyPressed(key) {
+        return this._pressedKeys.get(key, false);
+    }
+
+    function clockTick() {
+        gfx = this._gfx;
+        $game_flip(this._handle, gfx._gfxBuffer, gfx._gfxBufferSize);
+        if (gfx._gfxBuffer.length > 0) gfx._gfxBuffer.pop(); // reclaim large memory allocs slowly without high churn
+        now = getUnixTimeFloat();
+        dur = now - this._lastFlip;
+        expected_dur = 1.0 / this._data[3]; 
+        extra_dur = expected_dur - dur;
+        if (extra_dur < 0.001) extra_dur = 0.001;
+        sleep(extra_dur);
+        this._lastFlip = getUnixTimeFloat();
+    }
+
+    function set_title(title) {
+        title = title + '';
+        $game_set_title(this._handle, title);
+        this._data[0] = title;
+    }
+}

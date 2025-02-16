@@ -1,11 +1,10 @@
-
-
 class KeyEvent {
-    field type = 'KEY_EVENT';
+    field type;
     field key;
     field isDown;
 
     constructor(isDown, key) {
+        this.type = isDown ? 'KEY_DOWN' : 'KEY_UP';
         this.isDown = isDown;
         this.key = key;
     }

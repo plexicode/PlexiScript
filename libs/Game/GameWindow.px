@@ -14,7 +14,7 @@ class GameWindow {
         this._mutableBuf = [];
         while (this._mutableBuf.length < 16) this._mutableBuf.add(0);
         this._pressedKeys = {};
-    }    
+    }
 
     function show() {
         t = [];
@@ -38,7 +38,7 @@ class GameWindow {
             ev = null;
             switch (m[0]) {
                 case 'KEY':
-                    isDown = m[1] == 1;
+                    isDown = m[1];
                     key = m[2];
                     this._pressedKeys[key] = isDown;
                     ev = new KeyEvent(isDown, key);
@@ -62,7 +62,7 @@ class GameWindow {
         if (gfx._gfxBuffer.length > 0) gfx._gfxBuffer.pop(); // reclaim large memory allocs slowly without high churn
         now = getUnixTimeFloat();
         dur = now - this._lastFlip;
-        expected_dur = 1.0 / this._data[3]; 
+        expected_dur = 1.0 / this._data[3];
         extra_dur = expected_dur - dur;
         if (extra_dur < 0.001) extra_dur = 0.001;
         sleep(extra_dur);

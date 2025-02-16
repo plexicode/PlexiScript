@@ -13,6 +13,112 @@ EXT.game_close_window = (task, args) => {
     throw new Error('Not implemented: $game_close_window()');
 };
 
+EXT.game_pop_event_from_queue = (task, args) => {
+    let winHandle = VALUE_CONVERTER.unwrapNativeHandle(args[0]);
+    let hasAny = false;
+    let outBuf = args[1];
+    if (winHandle.evQueueOffset < winHandle.evQueue.length) {
+        hasAny = true;
+        let ev = winHandle.evQueue[winHandle.evQueueOffset++];
+        switch (ev.type) {
+            case 'key':
+                VALUE_CONVERTER.listSet(outBuf, 0, VALUE_CONVERTER.wrapString(task, 'KEY', true));
+                VALUE_CONVERTER.listSet(outBuf, 1, VALUE_CONVERTER.wrapBoolean(task, ev.isDown));
+                VALUE_CONVERTER.listSet(outBuf, 2, VALUE_CONVERTER.wrapString(task, ev.key, true));
+                break;
+            default:
+                throw new Error();
+        }
+    }
+
+    return VALUE_CONVERTER.wrapBoolean(task, hasAny);
+};
+
+EXT.u3_client_to_renderer = (task, args) => {
+  throw new Error('TODO');
+};
+
+EXT.u3_init = (task, args) => {
+  throw new Error('TODO');
+};
+
+EXT.game_show_window = (task, args) => {
+    let { procInfo } = unwrapAppContext(task);
+    let handle = {
+        isReady: false,
+        evQueue: [],
+        evQueueOffset: 0,
+    };
+    VALUE_CONVERTER.listAdd(args[3], VALUE_CONVERTER.wrapNativeHandle(handle));
+    const WIDTH = VALUE_CONVERTER.unwrapInteger(args[1]);
+    const HEIGHT = VALUE_CONVERTER.unwrapInteger(args[2]);
+    let klu = { };
+    ['Left', 'Right', 'Up', 'Down'].forEach(v => { klu['Arrow' + v] = v.toUpperCase(); });
+    ['Space', 'Enter', 'Tab', 'Escape', 'Backspace', 'Period', 'Comma', 'Semicolon'].forEach(v => { klu[v] = v.toUpperCase(); });
+    for (let i = 0; i <= 9; i++) klu['Digit' + i] = 'NUM' + i;
+    for (let i = 0; i < 26; i++) {
+        let c = String.fromCharCode('A'.charCodeAt(0) + i);
+        klu['Key' + c] = c;
+    }
+    for (let i = 1; i <= 12; i++) klu['F' + i] = 'F' + i;
+    klu.Minus = 'HYPHEN';
+    klu.Equal = 'EQUALS';
+    ['Left', 'Right'].forEach(dir => {
+        ['Shift', 'Alt', 'Ctrl,Control', 'OSCMD,Meta'].forEach(mod => {
+            let t = mod.split(',');
+            let dstName = t[0];
+            let srcName = t.pop();
+            klu[srcName + dir] = (dstName + '_' + dir).toUpperCase();
+        });
+    });
+
+    const KEY_LOOKUP = { ...klu };
+
+    OS.Shell.showWindow(procInfo.pid, {
+        title: VALUE_CONVERTER.toReadableString(args[0]),
+        width: WIDTH,
+        height: HEIGHT,
+        destroyProcessUponClose: true,
+        onInit: (contentHost, winData) => {
+            handle.isReady = true;
+            let canvas = document.createElement('canvas');
+            canvas.width = WIDTH;
+            canvas.height = HEIGHT;
+            contentHost.append(canvas);
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.position = 'absolute';
+            handle.canvas = canvas;
+            let ctx = canvas.getContext('2d');
+            handle.ctx = ctx;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        },
+        onKey: (ev, isDown) => {
+            let key = KEY_LOOKUP[ev.code];
+            if (!key) {
+                console.error("UNKNOWN KEY CODE: " + ev.code);
+            } else {
+                handle.evQueue.push({ type: 'key', key, isDown, ev });
+            }
+        },
+    });
+};
+
+EXT.u3_frame_new = (task, args) => {
+  throw new Error('TODO');
+};
+
+EXT.io_stdout = (task, args) => {
+  let { procInfo } = unwrapAppContext(task);
+  procInfo.stdout.writeln(VALUE_CONVERTER.toReadableString(args[0]));
+};
+
+EXT.game_set_title = (task, args) => {
+    let { procInfo } = unwrapAppContext(task);
+    throw new Error('Not implemented: $game_set_title()');
+};
+
 
 let gfxBuf = [];
 EXT.game_flip = (task, args) => {
@@ -52,75 +158,9 @@ EXT.game_flip = (task, args) => {
     }
 };
 
-EXT.game_pop_event_from_queue = (task, args) => {
-    let { procInfo } = unwrapAppContext(task);
-    return VALUE_CONVERTER.wrapBoolean(task, false);
-    /*let winHandle = VALUE_CONVERTER.unwrapNativeHandle(args[0]);
-    let buffer = args[1];
-    throw new Error('Not implemented: $game_pop_event_from_queue()');
-    */
-};
-
-EXT.game_set_title = (task, args) => {
-    let { procInfo } = unwrapAppContext(task);
-    throw new Error('Not implemented: $game_set_title()');
-};
-
-EXT.game_show_window = (task, args) => {
-    let { procInfo } = unwrapAppContext(task);
-    let handle = {
-        isReady: false,
-    };
-    VALUE_CONVERTER.listAdd(args[3], VALUE_CONVERTER.wrapNativeHandle(handle));
-    const WIDTH = VALUE_CONVERTER.unwrapInteger(args[1]);
-    const HEIGHT = VALUE_CONVERTER.unwrapInteger(args[2]);
-    let evQueue = [];
-    OS.Shell.showWindow(procInfo.pid, {
-        title: VALUE_CONVERTER.toReadableString(args[0]),
-        width: WIDTH,
-        height: HEIGHT,
-        destroyProcessUponClose: true,
-        onInit: (contentHost, winData) => {
-            handle.isReady = true;
-            let canvas = document.createElement('canvas');
-            canvas.width = WIDTH;
-            canvas.height = HEIGHT;
-            contentHost.append(canvas);
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.position = 'absolute';
-            handle.canvas = canvas;
-            let ctx = canvas.getContext('2d');
-            handle.ctx = ctx;
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        },
-        onKey: (ev, isDown) => {
-            evQueue.push({ type: 'key', isDown, ev });
-        }
-    });
-};
-
-EXT.io_stdout = (task, args) => {
-  let { procInfo } = unwrapAppContext(task);
-  procInfo.stdout.writeln(VALUE_CONVERTER.toReadableString(args[0]));
-};
-
 EXT.sleep = (task, args) => {
     let seconds = VALUE_CONVERTER.unwrapFloat(args[0]);
     CommonScript.task.sleepTask(task, Math.max(0, Math.floor(seconds * 1000 + 0.5)));
-};
-
-EXT.u3_client_to_renderer = (task, args) => {
-  throw new Error('TODO');
-};
-
-EXT.u3_frame_new = (task, args) => {
-  throw new Error('TODO');
-};
-
-EXT.u3_init = (task, args) => {
-  throw new Error('TODO');
 };
 
 

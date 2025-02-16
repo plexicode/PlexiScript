@@ -173,7 +173,9 @@ EXT.game_set_title = (task, args) => {
 };
 
 EXT.dom_create_element = (task, args) => {
-    throw new Error();
+    let tag = VALUE_CONVERTER.toReadableString(args[0]);
+    let e = document.createElement(tag);
+    return VALUE_CONVERTER.wrapNativeHandle(e);
 };
 
 
@@ -213,6 +215,12 @@ EXT.game_flip = (task, args) => {
                 throw new Error(); // unhandled graphics draw command
         }
     }
+};
+
+EXT.dom_append_item = (task, args) => {
+    let e = VALUE_CONVERTER.unwrapNativeHandle(args[0]);
+    let o = VALUE_CONVERTER.unwrapNativeHandle(args[1]);
+    e.append(o);
 };
 
 EXT.dom_clear_children = (task, args) => {

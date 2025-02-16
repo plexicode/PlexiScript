@@ -13,6 +13,7 @@
                 "u3_init",
                 "dom_apply_prop",
                 "dom_append_string",
+                "dom_append_item",
                 "dom_create_element",
                 "dom_create_window",
                 "dom_clear_children",

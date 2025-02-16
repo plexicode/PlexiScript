@@ -1,0 +1,70 @@
+function setProp(e, props) {
+    switch (typeof props) {
+        case 'null': return e;
+        case 'list':
+            for (i = 0; i < props.length; i++) {
+                setProp(e, props[i]);
+            }
+            return e;
+        case 'dict':
+            keys = props.keys();
+            for (i = 0; i < keys.length; i++) {
+                key = keys[i];
+                $dom_apply_prop(e, key, props[key]);
+            }
+            return e;
+        case 'string':
+            $dom_append_string(e, props);
+            return e;
+        case 'int':
+        case 'float':
+        case 'bool':
+            $dom_append_string(e, props + '');
+            return e;
+        default:
+            throw new Exception("Invalid DOM value: " + (typeof e));
+    }
+}
+
+function clearChildren(e) {
+    $dom_clear_children(e);
+    return e;
+}
+
+function createElement(tag, props = null) {
+    e = $dom_create_element(tag);
+    return props == null ? e : setProp(e, props);
+}
+
+class AbstractDomWindow {
+
+    field args;
+    field handle;
+
+    constructor(title, width, height) {
+        this.args = [title, width, height];
+    }
+
+    function show() {
+        $dom_create_window([
+            this.args[0],
+            this.args[1],
+            this.args[2],
+            this._initInternal,
+            this.onShown,
+            this.onClosed,
+            this.onClosing,
+        ]);
+    }
+    function _initInternal(contentHost, handle) {
+        this.handle = handle;
+        this.init(contentHost);
+    }
+
+    function onClosed( ) { }
+    function onClosing() { }
+    function onShown() { }
+    function init(contentHost) { }
+}
+
+

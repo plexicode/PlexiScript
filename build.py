@@ -56,7 +56,7 @@ def get_extension_list():
     output.append(ext_id)
   return output
 
-def gather_builtin_libs_as_lookup():
+def gather_builtin_libs_as_lookup(shorten):
   lookup = {}
   libs_dir = os.path.join(PLEXI_SCRIPT_DIR, 'libs')
 
@@ -66,9 +66,22 @@ def gather_builtin_libs_as_lookup():
     for file in os.listdir(lib_dir):
       if file.endswith('.px'):
         file_path = os.path.join(lib_dir, file)
-        files[file] = file_read_text(file_path)
+        code = file_read_text(file_path)
+        if shorten:
+          code = shorten_code(code)
+        files[file] = code
     lookup[lib_name] = files
   return lookup
+
+def shorten_code(code):
+  lines = code.rstrip().split('\n')
+  output = []
+  for line in lines:
+    line = line.strip()
+    if line.startswith('// '):
+      line = ''
+    output.append(line)
+  return '\n'.join(output)
 
 def file_read_text(path):
   c = open(path.replace('/', os.sep), 'rt')
@@ -81,10 +94,13 @@ def file_write_text(path, content):
   c.write(content)
   c.close()
 
-def get_target_dir(name):
-  target_dir = os.path.join(PLEXI_SCRIPT_DIR, 'dist', name + '-' + VERSION_DOTTED)
-  os.makedirs(target_dir, exist_ok = True)
-  return target_dir
+def ensure_directory_exists(path):
+  os.makedirs(path.replace('/', os.sep), exist_ok = True)
+
+def write_files_to_directory(dir, text_content_by_file_name):
+  ensure_directory_exists(dir)
+  for file_name in text_content_by_file_name.keys():
+    file_write_text(dir + '/' + file_name, text_content_by_file_name[file_name])
 
 def slice_by_marker(code, marker_start, marker_end):
   start_index = code.find(marker_start)
@@ -96,7 +112,7 @@ def slice_by_marker(code, marker_start, marker_end):
   return (a, b)
 
 def export_dotnet():
-  lookup = gather_builtin_libs_as_lookup()
+  lookup = gather_builtin_libs_as_lookup(True)
   file_inclusions_cs_path = os.path.join(PLEXI_SCRIPT_DIR, 'dotnetharness', 'PlexiScriptCompile', 'FileInclusions.cs')
   file_inclusions_code = file_read_text(file_inclusions_cs_path)
   a, b = slice_by_marker(file_inclusions_code, '%%%BUILTIN_MODULES_START%%%', '%%%BUILTIN_MODULES_END%%%')
@@ -133,29 +149,51 @@ def export_dotnet():
   extension_impl_code = '\n'.join(parts)
   file_write_text(extension_impl_cs_path, extension_impl_code)
 
+def do_macro_replacements(text, replacements):
+  for replacement in replacements:
+    macro, new_text = replacement
+    text = text.replace('%%%' + macro + '%%%', new_text)
+  return text
+
 def export_js(is_plexios):
-  platform_name = 'plexios' if is_plexios else 'jsweb'
-  common_script_edition = {
-    'jsweb': 'web',
-    'plexios': 'plexios',
-  }.get(platform_name)
-  common_script_file = '_'.join([
-    'CommonScriptRuntime',
-    common_script_edition,
-    VERSION_UNDERSCORE + '.js'
-  ])
-  common_script_path = os.path.join(COMMON_SCRIPT_DIR, 'dist', common_script_file)
-  target_dir = get_target_dir(platform_name)
-  shutil.copy(os.path.join(common_script_path), target_dir)
 
-  template_file = platform_name + '_rt.js'
-  template = file_read_text(os.path.join(TEMPLATES_DIR, 'runtime', template_file))
-  code = (template
-    ).replace('%%%VERSION_DOTTED%%%', VERSION_DOTTED
-    ).replace('%%%VERSION_UNDERSCORE%%%', VERSION_UNDERSCORE
-    ).replace('%%%EXTENSIONS%%%', '\n' + get_extension_code(platform_name))
+  file_writes = {}
 
-  file_write_text(os.path.join(target_dir, 'PlexiScriptRuntime_' + platform_name + '_' + VERSION_UNDERSCORE + '.js'), code)
+  if is_plexios:
+    platform_name = 'plexios'
+    common_script_edition_suffix = 'plexios_' + VERSION_UNDERSCORE
+  else:
+    platform_name = 'jsweb'
+    common_script_edition_suffix = 'web_' + VERSION_UNDERSCORE
+
+  # Copy common script files
+  common_script_src_dir = COMMON_SCRIPT_DIR + '/dist'
+  common_script_rt_file = 'CommonScriptRuntime_' + common_script_edition_suffix + '.js'
+  common_script_comp_file = 'CommonScriptCompile_' + common_script_edition_suffix + '.js'
+  file_writes[common_script_rt_file] = file_read_text(common_script_src_dir + '/' + common_script_rt_file)
+  file_writes[common_script_comp_file] = file_read_text(common_script_src_dir + '/' + common_script_comp_file)
+
+  # Copy and build plexi script templates
+  macro_replacements = [
+    ('VERSION_DOTTED', VERSION_DOTTED),
+    ('VERSION_UNDERSCORE', VERSION_UNDERSCORE),
+    ('EXTENSIONS', '\n' + get_extension_code(platform_name)),
+    ('BUILTIN_MODULES_DOUBLE_STRINGIFY', '\n' + json.dumps(json.dumps(gather_builtin_libs_as_lookup(True)))),
+    ('EXTENSION_IDS', ','.join(get_extension_list())),
+  ]
+
+  code = file_read_text(TEMPLATES_DIR + '/' + platform_name + '_rt.js')
+  code = do_macro_replacements(code, macro_replacements)
+  target_file = 'PlexiScriptRuntime_' + platform_name + '_' + VERSION_UNDERSCORE + '.js'
+  file_writes[target_file] = code
+
+  code = file_read_text(TEMPLATES_DIR + '/' + platform_name + '_comp.js')
+  code = do_macro_replacements(code, macro_replacements)
+  target_file = 'PlexiScriptCompile_' + platform_name + '_' + VERSION_UNDERSCORE + '.js'
+  file_writes[target_file] = code
+
+  target_dir = PLEXI_SCRIPT_DIR + '/dist/' + platform_name + '-' + VERSION_DOTTED
+  write_files_to_directory(target_dir, file_writes)
 
 if __name__ == '__main__':
   msg = main(sys.argv[1:])

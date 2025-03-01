@@ -180,6 +180,7 @@ def export_js(is_plexios):
     ('EXTENSIONS', '\n' + get_extension_code(platform_name)),
     ('BUILTIN_MODULES_DOUBLE_STRINGIFY', '\n' + json.dumps(json.dumps(gather_builtin_libs_as_lookup(True)))),
     ('EXTENSION_IDS', ','.join(get_extension_list())),
+    ('USAGE_NOTES', '\n' + json.dumps(file_read_text('templates/usage.txt'))),
   ]
 
   code = file_read_text(TEMPLATES_DIR + '/' + platform_name + '_rt.js')

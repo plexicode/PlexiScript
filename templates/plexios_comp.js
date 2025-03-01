@@ -4,8 +4,12 @@
 
   const PlexiScript = CommonScript()('PlexiScript', '%%%VERSION_DOTTED%%%', EXTENSIONS);
 
+  let usageNotes = [
+    //%%%USAGE_NOTES%%%
+  ][0];
+
   plexiModulesSrcByModuleId = JSON.parse(
-    // %%%BUILTIN_MODULES_DOUBLE_STRINGIFY%%%
+    //%%%BUILTIN_MODULES_DOUBLE_STRINGIFY%%%
   );
 
   let userCompilation = async (mainModuleId, fileLookupByModuleId) => {
@@ -22,6 +26,7 @@
 
   let compiler = Object.freeze({
     compile: plexiCompile,
+    getUsageNotes: () => usageNotes,
   });
   
   PlexiOS.HtmlUtil.registerComponent('PlexiScript_compile_%%%VERSION_UNDERSCORE%%%', () => compiler);

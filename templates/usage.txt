@@ -1,0 +1,6 @@
+Usage:
+  plexic [path-to-project-file] [options]
+
+Options:
+  --dst [path-for-output]    Save binary to given path
+

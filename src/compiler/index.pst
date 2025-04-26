@@ -1,0 +1,115 @@
+@import("images.pst");
+
+Array<int> PUBLIC_generateBundle(
+    string optionalAppId,
+    string title,
+    Array<int> byteCode,
+    Array<int> iconResource,
+    object imageManifestObj,
+    Array<object> binaryResourcesObjs,
+    Array<int> version) {
+
+    int i = 0;
+    int j = 0;
+
+    Dictionary<string, Array<int>> sections = new Dictionary<string, Array<int>>();
+
+    // App ID
+    if (optionalAppId != null) {
+        sections["ID"] = optionalAppId.ToUtf8Bytes();
+    }
+
+    if (title != null) {
+        sections["NAME"] = title.ToUtf8Bytes();
+    }
+
+    ImageManifest imageManifest = (ImageManifest) imageManifestObj;
+    if (imageManifest.atlases.Size() > 0) {
+        sections["IMG"] = generateImagePayloadForBundle(imageManifest);
+    }
+
+    sections["BC"] = byteCode;
+
+    List<int> output = new List<int>();
+
+    // The header is 20 bytes as follows:
+    // Bytes 1-6: "PLXSCR" as plain ASCII bytes
+    // Bytes 7 and 8: 0x00 and 0xFF
+    // Bytes 9-12: Major version as a 4-byte big endian integer
+    // Bytes 13-16: Minor version as a 4-byte big endian integer
+    // Bytes 17-20: Patch version as a 4-byte big endian integer
+    pushArrayIntToList(output, "PLXSCR".ToUtf8Bytes());
+    output.Add(0);
+    output.Add(255);
+    pushArrayIntToList(output, integerToBigEndian4(version[0]));
+    pushArrayIntToList(output, integerToBigEndian4(version[1]));
+    pushArrayIntToList(output, integerToBigEndian4(version[2]));
+
+    Array<string> keys = Core.SortedCopyOfStringArray(sections.Keys());
+    for (i = 0; i < keys.Size(); i += 1) {
+        string key = keys[i];
+        pushArrayIntToList(output, key.ToUtf8Bytes());
+        output.Add(0);
+        Array<int> payload = sections[key];
+        Array<int> payloadSizeBytes = integerToBigEndian4(payload.Size());
+        for (j = 0; j < 4; j += 1) {
+            output.Add(payloadSizeBytes[j]);
+        }
+        int sz = payload.Size();
+        for (j = 0; j < sz; j += 1) {
+            output.Add(payload[j]);
+        }
+    }
+
+    return Core.ListToArray(output);
+}
+
+Array<int> integerToBigEndian4(int value) {
+    Array<int> output = new Array<int>(4);
+    output[0] = (value >> 24) & 255;
+    output[1] = (value >> 16) & 255;
+    output[2] = (value >> 8) & 255;
+    output[3] = value & 255;
+    return output;
+}
+
+void pushArrayIntToList(List<int> dst, Array<int> src) {
+    // TODO: create native Pastel method
+    int sz = src.Size();
+    for (int i = 0; i < sz; i += 1) {
+        dst.Add(src[i]);
+    }
+}
+
+// TODO: put this into Pastel (but still surface it here)
+string PUBLIC_bytesToBase64(Array<int> buf) {
+    int i = 0;
+    int b = 0;
+    List<int> pairs = new List<int>();
+    int sz = buf.Size();
+    for (i = 0; i < sz; i += 1) {
+        b = buf[i];
+        pairs.Add((b >> 6) & 3);
+        pairs.Add((b >> 4) & 3);
+        pairs.Add((b >> 2) & 3);
+        pairs.Add(b & 3);
+    }
+    while (pairs.Size() % 3 != 0) pairs.Add(0);
+
+    Array<string> alphabet = new Array<string>(64);
+    for (i = 0; i < 26; i += 1) {
+        alphabet[i] = "" + Core.Chr(Core.Ord('A') + i);
+        alphabet[i + 26] = "" + Core.Chr(Core.Ord('a') + i);
+        if (i < 10) alphabet[i + 52] = Core.IntToString(i);
+    }
+    alphabet[62] = "+";
+    alphabet[63] = "/";
+
+    List<string> sb = new List<string>();
+    for (i = 0; i < pairs.Size(); i += 3) {
+        b = (pairs[i] << 4) | (pairs[i + 1] << 2) | pairs[i + 2];
+        sb.Add(alphabet[b]);
+    }
+    while (sb.Size() % 4 != 0) sb.Add("=");
+    return sb.Join("");
+}

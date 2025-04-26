@@ -1,0 +1,26 @@
+{
+    "source": "./compiler/index.pst",
+    "targets": [
+      {
+        "name": "csharp",
+        "language": "c#",
+        "imports": [
+          "System.Collections.Generic"
+        ],
+        "output": {
+          "namespace": "PlexiScriptCompile.Internal",
+          "structs-path": "../dotnetharness/PlexiScriptCompile/gen",
+          "functions-path": "../dotnetharness/PlexiScriptCompile/gen/GEN_FunctionWrapper.cs",
+          "functions-wrapper-class": "FunctionWrapper"
+        }
+      },
+      {
+        "name": "javascript",
+        "language": "javascript",
+        "output": {
+          "functions-path": "../templates/gen_comp.js"
+        }
+      }
+    ]
+  }
+  

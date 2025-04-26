@@ -1,28 +1,31 @@
-function setProp(e, props) {
-    switch (typeof props) {
+function setProp(e, prop) {
+    switch (typeof prop) {
         case 'null': return e;
         case 'list':
-            for (i = 0; i < props.length; i++) {
-                setProp(e, props[i]);
+            for (i = 0; i < prop.length; i++) {
+                setProp(e, prop[i]);
             }
             return e;
         case 'dict':
-            keys = props.keys();
+            keys = prop.keys();
             for (i = 0; i < keys.length; i++) {
                 key = keys[i];
-                $dom_apply_prop(e, key, props[key]);
+                value = prop[key];
+                t = typeof value;
+                if (t != 'function' && t != 'string') throw new Exception();
+                $dom_apply_prop(e, key, value, t == 'function');
             }
             return e;
         case 'string':
-            $dom_append_string(e, props);
+            $dom_append_string(e, prop);
             return e;
         case 'int':
         case 'float':
         case 'bool':
-            $dom_append_string(e, props + '');
+            $dom_append_string(e, prop + '');
             return e;
         case 'native':
-            $dom_append_item(e, props);
+            $dom_append_item(e, prop);
             return e;
         default:
             throw new Exception("Invalid DOM value: " + (typeof e));

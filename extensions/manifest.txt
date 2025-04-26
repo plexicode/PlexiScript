@@ -2,7 +2,7 @@ io_stdout
 u3_frame_new
 u3_client_to_renderer
 u3_init
-dom_apply_prop 
+dom_apply_prop
 dom_append_string
 dom_append_item
 dom_create_element
